@@ -28,8 +28,6 @@ headers={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTM
 logging.basicConfig(filename='output.log',level=logging.INFO)
 
 url = 'https://ir.daveandbusters.com/quarterly-results'
-# directory = '/reports'
-directory = '/pdfs'
 
 def setUp():
 	options = webdriver.ChromeOptions()
@@ -41,6 +39,7 @@ def setUp():
 	return driver
 
 def scrape_xls():
+	directory = '/xls'
 	driver = setUp()
 	reports = driver.find_elements(By.CLASS_NAME, 'acc-body') # get list of report links
 	quarters = driver.find_elements(By.CLASS_NAME, 'acc-title')
@@ -67,9 +66,9 @@ def scrape_xls():
 		try:
 			xls_report_url = xls_report.find_elements(By.TAG_NAME, 'a')[3].get_attribute('href') # Get url text of report
 			if xls_report_url == "Form 10-Q":
-				quarter, year, xls_file = get_filename_by_quarter(year, quarter, "_Q", ".xls") # get filename
+				quarter, year, xls_file = get_filename_by_quarter(directory, year, quarter, "_Q", ".xls") # get filename
 			elif xls_report_url == "Form 10-K":
-				quarter, year, xls_file = get_filename_by_quarter(year, quarter, "_K", ".xls") # get filename	
+				quarter, year, xls_file = get_filename_by_quarter(directory, year, quarter, "_K", ".xls") # get filename	
 		except Exception as exc:
 			print("Exception found %s" % exc)
 			driver.close()
@@ -90,6 +89,7 @@ def scrape_xls():
 	driver.quit
 
 def scrape_pdfs():
+	directory = '/pdfs'
 	driver = setUp()
 	reports = driver.find_elements(By.CLASS_NAME, 'acc-body') # get list of report links
 	quarters = driver.find_elements(By.CLASS_NAME, 'acc-title')
@@ -117,7 +117,7 @@ def scrape_pdfs():
 			pdf_report_url = pdf_report.find_element(By.CLASS_NAME, 'pdf-file-link')
 			pdf_report_url = pdf_report_url.find_element(By.CLASS_NAME, 'file')
 			pdf_report_url = pdf_report_url.find_elements(By.TAG_NAME, 'a')[0].get_attribute('href')
-			quarter, year, pdf_file = get_filename_by_quarter(year, quarter, "_Q", ".pdf") # get filename	
+			quarter, year, pdf_file = get_filename_by_quarter(directory, year, quarter, "_Q", ".pdf") # get filename	
 		except Exception as exc:
 			print("Exception found %s" % exc)
 			driver.close()
@@ -128,8 +128,6 @@ def scrape_pdfs():
 			continue
  
 		resp = requests.get(pdf_report_url, allow_redirects=True)
-		print("teeeeext!!!!")
-		print(resp.url)
 		filename = Path(pdf_file)
 		filename.write_bytes(resp.content)
 		time.sleep(1)
@@ -140,7 +138,7 @@ def scrape_pdfs():
 	driver.quit
 
 
-def get_filename_by_quarter(year, quarter, report_type, suffix):
+def get_filename_by_quarter(directory, year, quarter, report_type, suffix):
 	filename = os.getcwd() + directory + "/" + "dave_and_busters_earnings_" + str(year) + report_type + str(quarter) + suffix
 	quarter = quarter - 1 if quarter > 1 else 4
 	year = year if quarter != 4 else year - 1

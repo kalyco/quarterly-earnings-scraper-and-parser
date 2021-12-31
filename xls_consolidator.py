@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 
-xls_files = os.listdir(os.getcwd() + '/reports')
+xls_files = os.listdir(os.getcwd() + '/xls')
 other_store_operating_expenses = []
 
 for i in range(len(xls_files)):
@@ -11,7 +11,7 @@ for i in range(len(xls_files)):
     if file_name == '.DS_Store':
         continue
     
-    f = os.getcwd() + '/reports/' + file_name
+    f = os.getcwd() + '/xls/' + file_name
     book = xlrd.open_workbook(f)
     sheet = book.sheet_by_name("results of operations")
     

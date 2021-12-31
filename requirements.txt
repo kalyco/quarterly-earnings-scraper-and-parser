@@ -1,0 +1,10 @@
+os
+pandas
+numpy
+xlrd
+PyPDF2
+pathlib
+requests
+selenium
+time
+logging
