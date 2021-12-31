@@ -20,13 +20,16 @@ def parse_pdf(path, filename):
 		f = open("tmp.txt", "r")
 		total_revenues_this_q_line = False
 		total_revenues_last_q_line = False
+		total_operating_costs_this_q_line = False
+		total_operating_costs_last_q_line = False
+
 		last_q_count = 0
 		for line in f.readlines():
 			if total_revenues_this_q_line:
 				report_data["total_revenues_this_q"] = line
 				total_revenues_this_q_line = False
 				total_revenues_last_q_line = True
-				
+			
 			if "Total revenues" in line:
 				total_revenues_this_q_line = True
 
@@ -38,16 +41,32 @@ def parse_pdf(path, filename):
 					last_q_count = 0
 					total_revenues_last_q_line = False
 
+			if total_operating_costs_this_q_line:
+				report_data["total_operating_costs_this_q"] = line
+				total_operating_costs_this_q_line = False
+				total_operating_costs_last_q_line = True
+		
+			if "Total operating costs" in line:
+				total_operating_costs_this_q_line = True
+
+			if total_operating_costs_last_q_line:
+				if last_q_count != 2:
+					last_q_count += 1
+				else:
+					report_data["total_operating_costs_last_q"] = line
+					last_q_count = 0
+					total_operating_costs_last_q_line = False
+
 		# os.remove("tmp.txt")
 		print(report_data)
 
-	total_revenues_this_q = []
-	total_revenues_last_q = []
-	total_operating_costs_this_q = []
-	total_operating_costs_last_q = []
-	net_income_this_q = []
-	net_income_last_q = []
-	change_in_comparable_store_sales = []
+	# total_revenues_this_q = []
+	# total_revenues_last_q = []
+	# total_operating_costs_this_q = []
+	# total_operating_costs_last_q = []
+	# net_income_this_q = []
+	# net_income_last_q = []
+	# change_in_comparable_store_sales = []
 
 	return report_data
 
